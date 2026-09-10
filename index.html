@@ -720,12 +720,12 @@ function renderCalendarGrid(elId,y,m,interactive){
     const dateStr=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const dayTrades=byDate[dateStr];
     const clk=interactive?' data-date="'+dateStr+'" onclick="showDayDetail(this.dataset.date)"':'';
+    if(!dayTrades||!dayTrades.length){html+='<div class="calendar-cell calendar-cell--flat"'+clk+'><div class="calendar-cell__day">'+d+'</div></div>';continue;}
     const pnl=dayTrades.reduce((s,t)=>s+t.pnl,0);
     const abs=Math.abs(pnl);let cls='';
     if(pnl>0){if(abs>800)cls='profit-4';else if(abs>500)cls='profit-3';else if(abs>250)cls='profit-2';else cls='profit';}
     else{if(abs>500)cls='loss-4';else if(abs>300)cls='loss-3';else if(abs>150)cls='loss-2';else cls='loss';}
     const sign=pnl>0?'+':'−';
-    const clk=interactive?' data-date="'+dateStr+'" onclick="showDayDetail(this.dataset.date)"':'';
     html+='<div class="calendar-cell calendar-cell--'+cls+'"'+clk+'><div class="calendar-cell__day">'+d+'</div><div class="calendar-cell__pnl">'+sign+'$'+Math.round(abs)+'</div></div>';
   }
   grid.innerHTML=html;
