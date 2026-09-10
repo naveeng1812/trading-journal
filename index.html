@@ -139,6 +139,31 @@ footer{border-top:1px solid var(--border);padding:48px 0 32px}
 .footer__links a:hover{color:var(--text)}
 .footer__note{font-size:12px;color:var(--text-dim);margin-top:24px;line-height:1.6;max-width:720px}
 
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.price-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px 28px;position:relative}
+.price-card--featured{border-color:rgba(16,185,129,0.4);background:linear-gradient(180deg,var(--surface) 0%,rgba(16,185,129,0.04) 100%)}
+.price-card__badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--profit);color:#06110c;font-size:11px;font-weight:700;padding:4px 14px;border-radius:100px;font-family:var(--font-mono);letter-spacing:0.5px}
+.price-card__name{font-size:17px;font-weight:700;color:var(--text-bright);margin-bottom:6px}
+.price-card__price{font-size:38px;font-weight:800;color:var(--text-bright);letter-spacing:-1px}
+.price-card__price span{font-size:14px;font-weight:500;color:var(--text-dim)}
+.price-card__period{font-size:12px;color:var(--text-dim);font-family:var(--font-mono);margin-bottom:22px}
+.price-card__features{list-style:none;margin-bottom:26px}
+.price-card__features li{display:flex;gap:10px;font-size:13.5px;color:var(--text);padding:7px 0;align-items:flex-start}
+.price-card__features svg{width:15px;height:15px;flex-shrink:0;margin-top:2px}
+.price-card .btn{width:100%;justify-content:center}
+@media(max-width:900px){.pricing-grid{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq-list{max-width:720px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-item__q{display:flex;justify-content:space-between;align-items:center;padding:20px 0;cursor:pointer;font-size:15.5px;font-weight:600;color:var(--text-bright)}
+.faq-item__q svg{width:18px;height:18px;stroke:var(--text-dim);stroke-width:2;flex-shrink:0;transition:transform 0.2s}
+.faq-item__a{max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;font-size:14px;color:var(--text-dim);line-height:1.65}
+.faq-item--open .faq-item__q svg{transform:rotate(45deg)}
+.faq-item--open .faq-item__a{max-height:300px;padding-bottom:20px}
+
 @media(prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important}}
 </style>
 </head>
@@ -151,6 +176,8 @@ footer{border-top:1px solid var(--border);padding:48px 0 32px}
       <a href="#features">Features</a>
       <a href="#calendar">Calendar</a>
       <a href="#guardrails">Prop Firm Rules</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
     </div>
     <div class="nav__actions">
       <a href="index-app.html" class="btn btn--ghost">Log in</a>
@@ -295,6 +322,87 @@ footer{border-top:1px solid var(--border);padding:48px 0 32px}
   </div>
 </section>
 
+<section class="section section--alt" id="pricing">
+  <div class="wrap">
+    <div class="section__head">
+      <h2>Simple pricing. Start free.</h2>
+      <p>No credit card needed to begin. Upgrade when you're ready for more.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-card__name">Free</div>
+        <div class="price-card__price">₹0<span>/mo</span></div>
+        <div class="price-card__period">forever</div>
+        <ul class="price-card__features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Unlimited trade logging</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Calendar heatmap</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Basic analytics dashboard</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 1 playbook</li>
+        </ul>
+        <a href="index-app.html" class="btn btn--ghost">Start free</a>
+      </div>
+      <div class="price-card price-card--featured">
+        <div class="price-card__badge">Most popular</div>
+        <div class="price-card__name">Pro</div>
+        <div class="price-card__price">₹299<span>/mo</span></div>
+        <div class="price-card__period">billed monthly</div>
+        <ul class="price-card__features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Everything in Free</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Unlimited playbooks</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Advanced analytics and R-multiples</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> AI insights and weekly summaries</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Prop firm guardrails</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> CSV export</li>
+        </ul>
+        <a href="index-app.html" class="btn btn--primary">Get Pro</a>
+      </div>
+      <div class="price-card">
+        <div class="price-card__name">Elite</div>
+        <div class="price-card__price">₹599<span>/mo</span></div>
+        <div class="price-card__period">billed monthly</div>
+        <ul class="price-card__features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Everything in Pro</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Multi-account support</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Trade screenshots</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Custom reports and exports</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="var(--profit-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Priority support</li>
+        </ul>
+        <a href="index-app.html" class="btn btn--ghost">Get Elite</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="faq">
+  <div class="wrap">
+    <div class="section__head">
+      <h2>Questions, answered</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-item__q">Do I need to connect my broker?<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div class="faq-item__a">No. You log trades manually — symbol, direction, entry, exit, and the journal handles the rest. Broker integration is on the roadmap but not required to get started.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-item__q">Which markets are supported?<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div class="faq-item__a">Forex pairs (EURUSD, GBPUSD, USDJPY), indices (US30, SPX500, NAS100), commodities (XAUUSD gold, WTI crude), crypto (BTCUSD, ETHUSD), and US stocks (AAPL, TSLA, and more). If your instrument isn't listed, you can type it in manually.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-item__q">Is my trading data private?<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div class="faq-item__a">Yes. Each account is isolated — your trades are tied to your login and nobody else can see them. We don't share or sell your data.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-item__q">Can I use it on my phone?<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div class="faq-item__a">Yes. The journal is fully responsive and works in any mobile browser. Log trades from your phone right after you close a position.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-item__q">Is there really a free plan?<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div class="faq-item__a">Yes — the Free plan is free forever, with no trial period and no credit card required. You get unlimited trade logging, the calendar heatmap, and basic analytics. Upgrade to Pro or Elite only if you need more.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="section">
   <div class="cta">
     <h2>Start journaling in the next two minutes</h2>
@@ -313,6 +421,8 @@ footer{border-top:1px solid var(--border);padding:48px 0 32px}
         <a href="#features">Features</a>
         <a href="#calendar">Calendar</a>
         <a href="#guardrails">Prop Firm Rules</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
         <a href="index-app.html">Log in</a>
       </div>
     </div>
@@ -350,6 +460,11 @@ cal.innerHTML=pattern.map(v=>{
   if(v<0){const a=[0.15,0.3,0.5,0.75][Math.min(Math.abs(v)-1,3)];bg=`rgba(239,68,68,${a})`;col=Math.abs(v)>=3?'#fff':'var(--loss-bright)';}
   return `<div class="mini-cell" style="background:${bg}"></div>`;
 }).join('');
+
+// FAQ accordion
+document.querySelectorAll('.faq-item__q').forEach(q=>{
+  q.addEventListener('click',()=>{q.parentElement.classList.toggle('faq-item--open');});
+});
 </script>
 
 </body>
