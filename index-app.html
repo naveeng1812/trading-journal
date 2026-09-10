@@ -779,7 +779,7 @@ async function handleGoogleSignIn(){
   try {
     const { data, error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.href }
+      options: { redirectTo: 'https://naveeng1812.github.io/trading-journal/index-app.html' }
     });
     if(error) throw error;
     // Supabase will redirect to Google, then back here.
