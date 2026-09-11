@@ -414,7 +414,7 @@ tr:hover .trade-actions{opacity:1}
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar__logo" style="cursor:pointer" onclick="window.location.href='index.html'" title="Back to site">
-      <div class="sidebar__logo-icon">T</div>
+      <img src="logo.png" alt="TradingFXJournal" style="width:38px;height:38px;border-radius:10px;object-fit:contain">
       <div class="sidebar__logo-text">Trading<span>FX</span>Journal<span style="color:var(--profit-bright);font-size:11px">.com</span></div>
     </div>
     <nav class="sidebar__nav" id="navMenu">
@@ -834,7 +834,7 @@ let state = { trades: [], settings: { accountName:'Funded Account', startBalance
 let charts = {};
 const SYMBOL_COLORS = {'EURUSD':'#10b981','GBPUSD':'#f59e0b','USDJPY':'#06b6d4','XAUUSD':'#fbbf24','US30':'#22d3ee','SPX500':'#34d399','NAS100':'#f87171','AAPL':'#a78bfa','TSLA':'#ef4444','BTCUSD':'#3b82f6','ETHUSD':'#06b6d4','USDCAD':'#a78bfa','AUDUSD':'#34d399','WTI':'#60a5fa'};
 function getColor(symbol){return SYMBOL_COLORS[symbol] || '#7a8599';}
-function fmt(n){return Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});}
+function fmt(n){return Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmtPnl(n){const sign=n>0?'+':'−';return sign+'$'+fmt(n);}
 function fmtDate(d){const dt=new Date(d);return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
 
@@ -1399,7 +1399,7 @@ function loadSettingsForm(){
 function chartOpts(opts={}){
   const textColor='#7a8599';const gridColor='rgba(255,255,255,0.05)';
   const fontFamily="'Bricolage Grotesque', sans-serif";
-  return{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a2030',borderColor:'rgba(255,255,255,0.12)',borderWidth:1,titleColor:'#f4f7fb',bodyColor:'#e6edf3',padding:12,cornerRadius:8,titleFont:{family:fontFamily,size:12,weight:'600'},bodyFont:{family:fontFamily,size:13},callbacks:{label:c=>{const v=c.parsed.y;if(opts.yFmt)return opts.yFmt(v);return v;}}}},scales:{x:{grid:{display:opts.noXGrid?false:false},ticks:{color:textColor,font:{family:fontFamily,size:11},maxRotation:45,autoSkip:true,maxTicksLimit:10},border:{color:gridColor}},y:{grid:{color:gridColor},ticks:{color:textColor,font:{family:fontFamily,size:11},callback:v=>opts.yFmt?opts.yFmt(v):v},border:{display:false}}}};
+  return{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a2030',borderColor:'rgba(255,255,255,0.12)',borderWidth:1,titleColor:'#f4f7fb',bodyColor:'#e6edf3',padding:12,cornerRadius:8,titleFont:{family:fontFamily,size:12,weight:'600'},bodyFont:{family:fontFamily,size:13},callbacks:{label:c=>{const v=c.parsed.y;if opts.yFmt)return opts.yFmt(v);return v;}}}},scales:{x:{grid:{display:opts.noXGrid?false:false},ticks:{color:textColor,font:{family:fontFamily,size:11},maxRotation:45,autoSkip:true,maxTicksLimit:10},border:{color:gridColor}},y:{grid:{color:gridColor},ticks:{color:textColor,font:{family:fontFamily,size:11},callback:v=>opts.yFmt?opts.yFmt(v):v},border:{display:false}}}};
 }
 function ttOpts(cb){return{backgroundColor:'#1a2030',borderColor:'rgba(255,255,255,0.12)',borderWidth:1,titleColor:'#f4f7fb',bodyColor:'#e6edf3',padding:12,cornerRadius:8,callbacks:{label:cb}};}
 function toast(msg,type='info'){const t=document.getElementById('toast');t.className='toast toast--'+type;document.getElementById('toastText').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
