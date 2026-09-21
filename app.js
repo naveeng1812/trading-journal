@@ -1,3 +1,4 @@
+
 // ==================== SUPABASE CONFIG ====================
 // Supabase configured with project credentials
 const SUPABASE_URL = 'https://qxraupcxgiagrerpofda.supabase.co';
@@ -708,8 +709,9 @@ function loadSettingsForm(){
 
 // ==================== HELPERS ====================
 function chartOpts(opts={}){
-  const textColor='#7a8599';const gridColor='rgba(255,255,255,0.05)';
-  const fontFamily="'Bricolage Grotesque', sans-serif";
+  const isLight=document.documentElement.getAttribute('data-theme')==='light';
+  const textColor=isLight?'#6f6a60':'#8b929e';const gridColor=isLight?'rgba(28,24,16,0.06)':'rgba(255,255,255,0.05)';
+  const fontFamily="'Inter', sans-serif";
   return{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a2030',borderColor:'rgba(255,255,255,0.12)',borderWidth:1,titleColor:'#f4f7fb',bodyColor:'#e6edf3',padding:12,cornerRadius:8,titleFont:{family:fontFamily,size:12,weight:'600'},bodyFont:{family:fontFamily,size:13},callbacks:{label:c=>{const v=c.parsed.y;if(opts.yFmt)return opts.yFmt(v);return v;}}}},scales:{x:{grid:{display:opts.noXGrid?false:false},ticks:{color:textColor,font:{family:fontFamily,size:11},maxRotation:45,autoSkip:true,maxTicksLimit:10},border:{color:gridColor}},y:{grid:{color:gridColor},ticks:{color:textColor,font:{family:fontFamily,size:11},callback:v=>opts.yFmt?opts.yFmt(v):v},border:{display:false}}}};
 }
 function ttOpts(cb){return{backgroundColor:'#1a2030',borderColor:'rgba(255,255,255,0.12)',borderWidth:1,titleColor:'#f4f7fb',bodyColor:'#e6edf3',padding:12,cornerRadius:8,callbacks:{label:cb}};}
@@ -718,15 +720,15 @@ function refreshCurrentView(){const active=document.querySelector('.view--active
 
 // ==================== INIT ====================
 function toggleTheme(){
-  var current=document.documentElement.getAttribute('data-theme')||'dark';
+  var current=document.documentElement.getAttribute('data-theme')||'light';
   var newTheme=current==='dark'?'light':'dark';
   document.documentElement.setAttribute('data-theme',newTheme);
-  try{localStorage.setItem('tfj_theme',newTheme);}catch(e){}
+  try{localStorage.setItem('tfj_theme2',newTheme);}catch(e){}
   if(typeof refreshCurrentView==='function')refreshCurrentView();
 }
 function initTheme(){
-  var saved='dark';
-  try{saved=localStorage.getItem('tfj_theme')||'dark';}catch(e){}
+  var saved='light';
+  try{saved=localStorage.getItem('tfj_theme2')||'light';}catch(e){}
   document.documentElement.setAttribute('data-theme',saved);
 }
 initTheme();
