@@ -1,0 +1,82 @@
+name: build-split-files
+on: push
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build files
+        run: |
+          set -e
+          git show 9e021eacfa7cfc9d6a5e39876d57ee54a7862026:index-app.html > source.html
+          cat > build.py <<'PYEOF'
+          import re, hashlib
+          html = open('source.html').read()
+
+          # --- extract the app JS (the largest <script> block without src) ---
+          scripts = list(re.finditer(r'<script>(.*?)</script>', html, re.DOTALL))
+          big = max(scripts, key=lambda m: len(m.group(1)))
+          js = big.group(1)
+
+          # --- Patch 1: theme default light + fresh storage key ---
+          old1 = "function initTheme(){\n  var saved='dark';\n  try{saved=localStorage.getItem('tfj_theme')||'dark';}catch(e){}\n  document.documentElement.setAttribute('data-theme',saved);\n}"
+          new1 = "function initTheme(){\n  var saved='light';\n  try{saved=localStorage.getItem('tfj_theme2')||'light';}catch(e){}\n  document.documentElement.setAttribute('data-theme',saved);\n}"
+          assert old1 in js, 'patch1 anchor missing'
+          js = js.replace(old1, new1)
+
+          # --- Patch 2: toggle uses new key, light fallback ---
+          old2 = "var current=document.documentElement.getAttribute('data-theme')||'dark';\n  var newTheme=current==='dark'?'light':'dark';\n  document.documentElement.setAttribute('data-theme',newTheme);\n  try{localStorage.setItem('tfj_theme',newTheme);}catch(e){}"
+          new2 = "var current=document.documentElement.getAttribute('data-theme')||'light';\n  var newTheme=current==='dark'?'light':'dark';\n  document.documentElement.setAttribute('data-theme',newTheme);\n  try{localStorage.setItem('tfj_theme2',newTheme);}catch(e){}"
+          assert old2 in js, 'patch2 anchor missing'
+          js = js.replace(old2, new2)
+
+          # --- Patch 3: chart colors theme-aware + Inter font ---
+          old3 = "const textColor='#7a8599';const gridColor='rgba(255,255,255,0.05)';\n  const fontFamily=\"'Bricolage Grotesque', sans-serif\";"
+          new3 = "const isLight=document.documentElement.getAttribute('data-theme')==='light';\n  const textColor=isLight?'#6f6a60':'#8b929e';const gridColor=isLight?'rgba(28,24,16,0.06)':'rgba(255,255,255,0.05)';\n  const fontFamily=\"'Inter', sans-serif\";"
+          assert old3 in js, 'patch3 anchor missing'
+          js = js.replace(old3, new3)
+
+          open('app.js','w').write(js)
+
+          # --- build the shell ---
+          old_font = 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Fragment+Mono:wght@400;500;600&display=swap'
+          new_font = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap'
+          assert old_font in html, 'font anchor missing'
+          html = html.replace(old_font, new_font)
+
+          style_start = html.find('<style>')
+          style_end = html.find('</style>') + len('</style>')
+          assert style_start > 0
+          html = html[:style_start] + '<link rel="stylesheet" href="styles.css?v=6">' + html[style_end:]
+
+          scripts = list(re.finditer(r'<script>(.*?)</script>', html, re.DOTALL))
+          big = max(scripts, key=lambda m: len(m.group(1)))
+          html = html[:big.start()] + '<script src="app.js?v=6"></script>' + html[big.end():]
+
+          open('index-app.html','w').write(html)
+
+          for name in ['app.js', 'index-app.html']:
+              data = open(name, 'rb').read()
+              print(name, len(data), 'bytes', hashlib.sha256(data).hexdigest())
+          PYEOF
+          python3 build.py
+          echo "918b19d6a12f0c7f3be8b8c307373af1ea9c1bea5f9fcffe6e5ccab4ce4f895a  app.js" > /tmp/hashes
+          echo "3444d162ec7b91d0363b8395e1f2deb2a864e8278e2c8a40fd3234a785a7e22a  index-app.html" >> /tmp/hashes
+          sha256sum -c /tmp/hashes
+          wc -c app.js index-app.html
+      - name: Commit and push
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.js
+          git commit -m "App logic — theme-aware charts, light default, Inter font"
+          git add index-app.html
+          git commit -m "Minimalist redesign — shell referencing styles.css and app.js"
+          git rm -q .github/workflows/build-split.yml
+          git commit -m "Remove temporary build workflow"
+          git push
