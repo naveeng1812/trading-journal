@@ -308,7 +308,10 @@ function renderDashboard(){
     {label:'Win Rate',value:stats.winRate+'%',trend:'up',trendText:stats.wins+'W / '+stats.losses+'L',sub:''},
     {label:'Profit Factor',value:stats.profitFactor.toFixed(2),trend:stats.profitFactor>=1?'up':'down',trendText:'Gross P/L',sub:''},
     {label:'Total Trades',value:stats.totalTrades,trend:'up',trendText:'All time',sub:''},
-    {label:'Avg Win',value:'+$'+fmt(stats.avgWin),color:'var(--profit-bright)',trend:'up',trendText:'Avg loss: −$'+fmt(stats.avgLoss),sub:''},
+    {label:'Avg Win',value:'+$'+fmt(stats.avgWin),color:'var(--profit-bright)',trend:'up',trendText:'per winning trade',sub:''},
+    {label:'Avg Loss',value:'−$'+fmt(stats.avgLoss),color:'var(--loss-bright)',trend:'down',trendText:'per losing trade',sub:''},
+    {label:'Highest Profit',value:'+$'+fmt(stats.bestTrade),color:'var(--profit-bright)',trend:'up',trendText:'best single trade',sub:''},
+    {label:'Highest Loss',value:'−$'+fmt(stats.worstTrade),color:'var(--loss-bright)',trend:'down',trendText:'worst single trade',sub:''},
     {label:'Max Drawdown',value:'−$'+fmt(stats.maxDD),color:'var(--loss-bright)',trend:'down',trendText:(stats.maxDD/startBal*100).toFixed(1)+'% of acct',sub:'',dotColor:'var(--loss)'}
   ];
   kpiRow.innerHTML=kpis.map((k,i)=>`<div class="kpi-card ${k.hero?'kpi-card--hero':''}" style="--i:${i}"><div class="kpi-card__label"><span class="kpi-card__label-dot" style="background:${k.dotColor||'var(--profit)'}"></span>${k.label}</div><div class="kpi-card__value" style="${k.color?'color:'+k.color:''}">${k.value}</div><div class="kpi-card__sub"><span class="kpi-card__trend kpi-card__trend--${k.trend}">${k.trendText}</span>${k.sub}</div></div>`).join('');
