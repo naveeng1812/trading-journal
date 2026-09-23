@@ -117,6 +117,62 @@ async function handleLogout(){
   toast('Logged out', 'info');
 }
 
+// ==================== CLOUD SYNC (SUPABASE) ====================
+var __lastPullAt=0;
+async function syncPull(){
+  if(!supabaseClient||!currentUser)return;
+  const now=Date.now();if(now-__lastPullAt<4000)return;__lastPullAt=now;
+  try{
+    const {data,error}=await supabaseClient.from('trades').select('*').order('date',{ascending:false});
+    if(error)throw error;
+    if(Array.isArray(data)){
+      state.trades=data.map(t=>({id:t.id,symbol:t.symbol,side:t.side,setup:t.setup||'',entry:t.entry,exit:t.exit_price,qty:t.qty,pnl:t.pnl,r:t.r||0,date:t.date,notes:t.notes||''}));
+    }
+    const res=await supabaseClient.from('user_settings').select('settings').eq('user_id',currentUser.id);
+    if(!res.error&&res.data&&res.data.length&&res.data[0].settings){
+      state.settings={...state.settings,...res.data[0].settings};
+      if(typeof loadSettingsForm==='function')loadSettingsForm();
+    }
+    saveState();
+    if(typeof refreshCurrentView==='function')refreshCurrentView();
+    if(state.trades.length)toast('Trades synced from cloud','success');
+  }catch(e){
+    console.warn('Cloud sync failed:',e.message||e);
+    toast('Cloud sync failed — check your connection','error');
+  }
+}
+async function syncPushTrade(t){
+  if(!supabaseClient||!currentUser||!t)return;
+  try{
+    const {error}=await supabaseClient.from('trades').upsert({
+      id:t.id,user_id:currentUser.id,symbol:t.symbol,side:t.side,setup:t.setup||'',
+      entry:t.entry,exit_price:t.exit,qty:t.qty,pnl:t.pnl,r:t.r||0,date:t.date,notes:t.notes||''
+    });
+    if(error)throw error;
+  }catch(e){
+    console.warn('Cloud push failed:',e.message||e);
+    toast('Saved on this device — cloud save failed','error');
+  }
+}
+async function syncDeleteTrade(id){
+  if(!supabaseClient||!currentUser)return;
+  try{
+    const {error}=await supabaseClient.from('trades').delete().eq('id',id);
+    if(error)throw error;
+  }catch(e){
+    console.warn('Cloud delete failed:',e.message||e);
+  }
+}
+async function syncPushSettings(){
+  if(!supabaseClient||!currentUser)return;
+  try{
+    const {error}=await supabaseClient.from('user_settings').upsert({user_id:currentUser.id,settings:state.settings});
+    if(error)throw error;
+  }catch(e){
+    console.warn('Settings sync failed:',e.message||e);
+  }
+}
+
 function showApp(){
   document.getElementById('authScreen').classList.add('hidden');
   document.getElementById('mainApp').style.display = 'grid';
@@ -128,9 +184,10 @@ function showApp(){
   }
   // Load user-specific data and render
   loadState();
-  if(!state.trades.length){ seedData(); }
+  if(!state.trades.length && !currentUser){ seedData(); }
   loadSettingsForm();
   renderDashboard();
+  if(currentUser){ syncPull(); }
 }
 
 function getStorageKey(){
@@ -476,6 +533,7 @@ function saveTrade(){
   else{state.trades.push({id,symbol,side,setup,entry,exit,qty,pnl,r,date,notes});}
   state.trades.sort((a,b)=>new Date(b.date)-new Date(a.date));
   saveState();closeTradeModal();
+  if(currentUser){const t=state.trades.find(x=>x.id===id);if(t)syncPushTrade(t);}
   toast(existing?'Trade updated':'Trade added','success');
   refreshCurrentView();
 }
@@ -483,7 +541,7 @@ function editTrade(id){openTradeModal(id);}
 function deleteTrade(id){
   if(!confirm('Delete this trade?'))return;
   state.trades=state.trades.filter(t=>t.id!==id);
-  saveState();toast('Trade deleted','info');refreshCurrentView();
+  saveState();if(currentUser)syncDeleteTrade(id);toast('Trade deleted','info');refreshCurrentView();
 }
 function deleteAllTrades(){
   if(!confirm('Delete ALL trades? This cannot be undone.'))return;
@@ -696,7 +754,7 @@ function saveSettings(){
   state.settings.maxDailyLoss=parseFloat(document.getElementById('setMaxDailyLoss').value)||1000;
   state.settings.maxDailyTrades=parseInt(document.getElementById('setMaxTrades').value)||20;
   state.settings.riskPerTrade=parseFloat(document.getElementById('setRiskPerTrade').value)||2;
-  saveState();toast('Settings saved','success');refreshCurrentView();
+  saveState();if(currentUser)syncPushSettings();toast('Settings saved','success');refreshCurrentView();
 }
 function loadSettingsForm(){
   document.getElementById('setAccountName').value=state.settings.accountName;
