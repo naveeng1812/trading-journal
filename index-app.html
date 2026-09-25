@@ -168,7 +168,7 @@
       <div class="trades-section" style="animation-delay:0.5s">
         <div class="chart-header"><div><div class="chart-header__title">Recent Trades</div><div class="chart-header__subtitle">Last 8 executed trades</div></div>
           <button class="btn btn--ghost" onclick="switchView('trades')">View All</button></div>
-        <div style="overflow-x:auto"><table class="trades-table"><thead><tr><th>Symbol</th><th>Side</th><th>Setup</th><th class="td-num">Entry</th><th class="td-num">Exit</th><th class="td-num">Qty</th><th class="td-num">P&L</th><th class="td-num">R</th><th>Date</th></tr></thead><tbody id="recentTradesBody"></tbody></table></div>
+        <div style="overflow-x:auto"><table class="trades-table"><thead><tr><th>Symbol</th><th>Side</th><th>Setup</th><th class="td-num">P&L</th><th class="td-num">R</th><th>Date</th></tr></thead><tbody id="recentTradesBody"></tbody></table></div>
       </div>
     </section>
 
@@ -207,7 +207,6 @@
       <div class="trades-section">
         <div style="overflow-x:auto"><table class="trades-table"><thead><tr>
           <th data-sort="symbol">Symbol</th><th data-sort="side">Side</th><th data-sort="setup">Setup</th>
-          <th data-sort="entry" class="td-num">Entry</th><th data-sort="exit" class="td-num">Exit</th><th data-sort="qty" class="td-num">Qty</th>
           <th data-sort="pnl" class="td-num">P&L</th><th data-sort="r" class="td-num">R</th><th data-sort="date">Date</th><th>Actions</th>
         </tr></thead><tbody id="allTradesBody"></tbody></table></div>
       </div>
@@ -324,10 +323,8 @@
           <div class="form-group"><label class="form-label">Side</label><select class="form-select" id="fSide"><option>Long</option><option>Short</option></select></div>
           <div class="form-group"><label class="form-label">Setup</label><select class="form-select" id="fSetup"><option>Breakout</option><option>Pullback</option><option>Reversal</option><option>Breakdown</option><option>Trend Following</option><option>Scalp</option><option>Swing</option></select></div>
           <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="fDate" type="date" required></div>
-          <div class="form-group"><label class="form-label">Entry Price</label><input class="form-input" id="fEntry" type="number" step="0.05" placeholder="0.00" required></div>
-          <div class="form-group"><label class="form-label">Exit Price</label><input class="form-input" id="fExit" type="number" step="0.05" placeholder="0.00" required></div>
-          <div class="form-group"><label class="form-label">Quantity</label><input class="form-input" id="fQty" type="number" placeholder="0" required></div>
-          <div class="form-group"><label class="form-label">Risk Amount ($)</label><input class="form-input" id="fRisk" type="number" step="0.01" placeholder="0.00"></div>
+          <div class="form-group"><label class="form-label">Profit / Loss ($)</label><input class="form-input" id="fPnl" type="number" step="0.01" placeholder="+ profit, - loss" required></div>
+          <div class="form-group"><label class="form-label">R Multiple (optional)</label><input class="form-input" id="fR" type="number" step="0.01" placeholder="e.g. 1.5"></div>
           <div class="form-group form-group--full"><label class="form-label">Notes</label><textarea class="form-textarea" id="fNotes" placeholder="Trade rationale, mistakes, lessons..."></textarea></div>
         </div>
       </form>
@@ -339,6 +336,6 @@
 <!-- TOAST -->
 <div class="toast" id="toast"><span class="toast__text" id="toastText"></span></div>
 
-<script src="app.js?v=8"></script>
+<script src="app.js?v=10"></script>
 </body>
 </html>

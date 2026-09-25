@@ -146,7 +146,7 @@ async function syncPushTrade(t){
   try{
     const {error}=await supabaseClient.from('trades').upsert({
       id:t.id,user_id:currentUser.id,symbol:t.symbol,side:t.side,setup:t.setup||'',
-      entry:t.entry,exit_price:t.exit,qty:t.qty,pnl:t.pnl,r:t.r||0,date:t.date,notes:t.notes||''
+      entry:t.entry||0,exit_price:t.exit||0,qty:t.qty||0,pnl:t.pnl,r:t.r||0,date:t.date,notes:t.notes||''
     });
     if(error)throw error;
   }catch(e){
@@ -342,9 +342,7 @@ function tradeRow(t,showActions=true){
     <td><span class="symbol-badge"><span class="symbol-badge__dot" style="background:${getColor(t.symbol)}"></span>${t.symbol}</span></td>
     <td><span class="tag-side ${t.side==='Long'?'tag-long':'tag-short'}">${t.side}</span></td>
     <td><span class="tag-setup">${t.setup}</span></td>
-    <td class="td-num td-mono">${t.entry.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1})}</td>
-    <td class="td-num td-mono">${t.exit.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1})}</td>
-    <td class="td-num td-mono">${t.qty}</td>
+    
     <td class="td-num td-mono ${isProfit?'pnl-positive':'pnl-negative'}">${fmtPnl(t.pnl)}</td>
     <td class="td-num td-mono ${t.r>0?'pnl-positive':'pnl-negative'}">${t.r>0?'+':''}${t.r}R</td>
     <td class="td-mono" style="color:var(--text-dim)">${fmtDate(t.date)}</td>
@@ -484,7 +482,7 @@ function renderTradesTable(){
   document.getElementById('tradesCount').textContent=filtered.length+' trades';
   const body=document.getElementById('allTradesBody');
   if(!filtered.length){
-    body.innerHTML=`<tr><td colspan="10"><div class="empty-state"><div class="empty-state__icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="empty-state__title">No trades found</div><div class="empty-state__text">Try adjusting filters or add a new trade.</div></div></td></tr>`;
+    body.innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="empty-state__icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="empty-state__title">No trades found</div><div class="empty-state__text">Try adjusting filters or add a new trade.</div></div></td></tr>`;
     return;
   }
   body.innerHTML=filtered.map(t=>tradeRow(t,true)).join('');
@@ -508,10 +506,8 @@ function openTradeModal(id){
     document.getElementById('fSide').value=t.side;
     document.getElementById('fSetup').value=t.setup;
     document.getElementById('fDate').value=t.date;
-    document.getElementById('fEntry').value=t.entry;
-    document.getElementById('fExit').value=t.exit;
-    document.getElementById('fQty').value=t.qty;
-    document.getElementById('fRisk').value=Math.abs(t.entry*t.qty*0.005).toFixed(2);
+    document.getElementById('fPnl').value=t.pnl;
+    document.getElementById('fR').value=t.r||'';
     document.getElementById('fNotes').value=t.notes||'';
   }}
   modal.classList.add('active');
@@ -523,17 +519,13 @@ function saveTrade(){
   const side=document.getElementById('fSide').value;
   const setup=document.getElementById('fSetup').value;
   const date=document.getElementById('fDate').value;
-  const entry=parseFloat(document.getElementById('fEntry').value);
-  const exit=parseFloat(document.getElementById('fExit').value);
-  const qty=parseInt(document.getElementById('fQty').value);
-  const riskVal=parseFloat(document.getElementById('fRisk').value)||Math.abs(entry*qty*0.005);
+  const pnl=Math.round(parseFloat(document.getElementById('fPnl').value)*100)/100;
+  const r=parseFloat(document.getElementById('fR').value)||0;
   const notes=document.getElementById('fNotes').value;
-  if(!symbol||!entry||!exit||!qty||!date){toast('Please fill all required fields','error');return;}
-  const pnl=Math.round((exit-entry)*qty*(side==='Long'?1:-1)*100)/100;
-  const r=Math.round(pnl/riskVal*100)/100;
+  if(!symbol||isNaN(pnl)||!date){toast('Please fill symbol, date and P/L amount','error');return;}
   const existing=state.trades.find(t=>t.id===id);
-  if(existing){Object.assign(existing,{symbol,side,setup,entry,exit,qty,pnl,r,date,notes});}
-  else{state.trades.push({id,symbol,side,setup,entry,exit,qty,pnl,r,date,notes});}
+  if(existing){Object.assign(existing,{symbol,side,setup,pnl,r,date,notes});}
+  else{state.trades.push({id,symbol,side,setup,pnl,r,date,notes});}
   state.trades.sort((a,b)=>new Date(b.date)-new Date(a.date));
   saveState();closeTradeModal();
   if(currentUser){const t=state.trades.find(x=>x.id===id);if(t)syncPushTrade(t);}
@@ -741,8 +733,8 @@ function renderInsights(){
 
 // ==================== EXPORT ====================
 function exportTrades(){
-  const headers=['Symbol','Side','Setup','Date','Entry','Exit','Qty','PnL','R','Notes'];
-  const rows=state.trades.map(t=>[t.symbol,t.side,t.setup,t.date,t.entry,t.exit,t.qty,t.pnl,t.r,t.notes||'']);
+  const headers=['Symbol','Side','Setup','Date','PnL','R','Notes'];
+  const rows=state.trades.map(t=>[t.symbol,t.side,t.setup,t.date,t.pnl,t.r,t.notes||'']);
   const csv=[headers.join(','),...rows.map(r=>r.map(c=>`"${c}"`).join(','))].join('\n');
   const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download='trades_export.csv';a.click();URL.revokeObjectURL(url);
